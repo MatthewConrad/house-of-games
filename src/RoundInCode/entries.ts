@@ -1,0 +1,37 @@
+export const CODE_ENTRIES: Record<string, string[]> = {
+  Instruments: [
+    "Glockenspiel",
+    "Piccolo",
+    "Flugelhorn",
+    "Harpsichord",
+    "Cello",
+    "Autoharp",
+  ],
+  Cocktails: [
+    "Espresso Martini",
+    "White Russian",
+    "Manhattan",
+    "Pink Panty Dropper",
+    "Old Fashioned",
+    "Gin and Tonic",
+  ],
+  "Animated Movies": [
+    "Finding Dory",
+    "Prince of Egypt",
+    "A Bugs Life",
+    "The Lion King",
+    "Hercules",
+    "Road to El Dorado",
+    "An American Tail Fievel Goes West",
+    "Coco",
+  ],
+  "Carpenters Songs": [
+    "Weve Only Just Begun",
+    "Top of the World",
+    "Merry Christmas Darling",
+    "Goodbye to Love",
+    "Superstar",
+    "Rainy Days and Mondays",
+    "Yesterday Once More",
+  ],
+};
