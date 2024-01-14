@@ -3,14 +3,14 @@ import { CODE_ENTRIES } from "./entries";
 import { stringToCodeWords } from "./helpers";
 import {
   AnimationHelper,
+  CODE_WIDTH,
   CodeAnswer,
-  CodeAnswerFrame,
-  CodeWord,
+  CodeWordContainer,
   CodeWrapper,
   FrameWrapper,
 } from "./presenter";
 import { RoundProps, Rounds } from "../types";
-import { Clue, ControlsContainer, Footer, PageWrapper } from "../App.presenter";
+import { ControlsContainer, Footer, PageWrapper } from "../App.presenter";
 import { CSSTransition } from "react-transition-group";
 import {
   useGameActions,
@@ -18,16 +18,17 @@ import {
   useRoundSelector,
 } from "../redux/hooks";
 import { RoundIntro } from "../RoundIntro/RoundIntro";
+import { Frame } from "../components/Frame";
 
 export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
   const { handleAwardPoint } = useGameActions();
 
   const [categoryIndex, setCategoryIndex] = useState(0);
+  const [showCategory, setShowCategory] = useState(true);
   const [clueIndex, setClueIndex] = useState(0);
   const [showClue, setShowClue] = useState(true);
   const [showAnswer, setShowAnswer] = useState(false);
-  const clueRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const codeRef = useRef<HTMLDivElement>(null);
   const answerRef = useRef<HTMLDivElement>(null);
@@ -42,13 +43,15 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
   const handleAdvanceRound = () => {
     setShowAnswer(false);
     setShowClue(false);
-    if (clueIndex === 0 && !showClue) {
+
+    if (!showClue && clueIndex === 0) {
       setShowClue(true);
     } else {
       if (clueIndex < clues.length - 1) {
         setClueIndex((i) => i + 1);
       } else {
         if (categoryIndex < categories.length - 1) {
+          setShowCategory(false);
           setCategoryIndex((i) => i + 1);
           setClueIndex(0);
         } else {
@@ -72,6 +75,13 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
   };
 
   useEffect(() => {
+    if (!showCategory && categoryIndex !== 0) {
+      setShowCategory(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryIndex]);
+
+  useEffect(() => {
     if (!showClue && clueIndex !== 0) {
       setShowClue(true);
     }
@@ -80,26 +90,24 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
 
   return (
     <PageWrapper>
-      <CSSTransition nodeRef={clueRef} in={true} appear={true} timeout={0}>
-        <Clue ref={clueRef}>
-          <span>{category}</span>
-        </Clue>
-      </CSSTransition>
+      <Frame animationIn={showCategory} width={950}>
+        <span>{category}</span>
+      </Frame>
       {showClue && (
         <AnimationHelper>
-          <CSSTransition nodeRef={frameRef} in={true} appear timeout={0}>
-            <FrameWrapper ref={frameRef}>
-              {codeWords.map((word, index) => (
-                <CodeWord key={category + index + "helper"}>
-                  {word.map((codeChar, charIndex) => (
-                    <CodeAnswerFrame
-                      key={index + codeChar.char + charIndex + "helper"}
-                    />
-                  ))}
-                </CodeWord>
-              ))}
-            </FrameWrapper>
-          </CSSTransition>
+          <FrameWrapper ref={frameRef}>
+            {codeWords.map((word, index) => (
+              <CodeWordContainer key={category + index + "helper"}>
+                {word.map((codeChar, charIndex) => (
+                  <Frame
+                    isAnswer
+                    width={CODE_WIDTH}
+                    key={index + codeChar.char + charIndex + "helper"}
+                  />
+                ))}
+              </CodeWordContainer>
+            ))}
+          </FrameWrapper>
           <CSSTransition
             nodeRef={codeRef}
             in={!showAnswer}
@@ -110,13 +118,13 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
           >
             <CodeWrapper ref={codeRef}>
               {codeWords.map((word, index) => (
-                <CodeWord key={category + index + "code"}>
+                <CodeWordContainer key={category + index + "code"}>
                   {word.map((codeChar, charIndex) => (
                     <CodeAnswer key={index + codeChar.code + charIndex}>
                       {codeChar.code}
                     </CodeAnswer>
                   ))}
-                </CodeWord>
+                </CodeWordContainer>
               ))}
             </CodeWrapper>
           </CSSTransition>
@@ -130,13 +138,13 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
           >
             <CodeWrapper ref={answerRef}>
               {codeWords.map((word, index) => (
-                <CodeWord key={category + index + "char"}>
+                <CodeWordContainer key={category + index + "char"}>
                   {word.map((codeChar, charIndex) => (
                     <CodeAnswer key={index + codeChar.char + charIndex}>
                       {codeChar.char}
                     </CodeAnswer>
                   ))}
-                </CodeWord>
+                </CodeWordContainer>
               ))}
             </CodeWrapper>
           </CSSTransition>
