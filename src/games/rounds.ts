@@ -1,4 +1,4 @@
-import { Rounds } from "./types";
+import { Rounds } from "../types/gameState";
 
 export const ROUND_NAMES = {
   [Rounds.ROUND_IN_CODE]: "This Round is In Code",

@@ -1,15 +1,15 @@
 import { useRef, useState } from "react";
-import { ROUND_NAMES } from "../rounds";
-import { Rounds } from "../types";
+import { ROUND_NAMES } from "../../games/rounds";
+import { Rounds } from "../../types/gameState";
 import { CSSTransition } from "react-transition-group";
-import { ControlsContainer, Footer, PageWrapper } from "../App.presenter";
+import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
 import {
   AnimationHelper,
   Diamond,
   IntroWrapper,
   RoundTitle,
 } from "./presenter";
-import { useGameActions } from "../redux/hooks";
+import { useGameActions } from "../../redux/hooks";
 
 interface IntroProps {
   round: Rounds;

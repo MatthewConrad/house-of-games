@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { RoundProps, Rounds } from "../types";
+import { RoundProps, Rounds } from "../../types/gameState";
 import { ANSWER_SMASH_ENTRIES } from "./entries";
 import { ImageClue, ImageTransform } from "./presenter";
 import { CSSTransition } from "react-transition-group";
-import { Clue, ControlsContainer, Footer, PageWrapper } from "../App.presenter";
+import { Clue, ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
 import {
   useGameActions,
   usePlayersSelector,
   useRoundSelector,
-} from "../redux/hooks";
-import { RoundIntro } from "../RoundIntro/RoundIntro";
+} from "../../redux/hooks";
+import { RoundIntro } from "../../components/RoundIntro/RoundIntro";
 
 export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();

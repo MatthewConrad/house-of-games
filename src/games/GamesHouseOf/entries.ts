@@ -1,4 +1,4 @@
-import { ClueEntry } from "../types";
+import { ClueEntry } from "../../types/gameState";
 
 export const GAMES_HOUSE_OF_ENTRIES: ClueEntry[] = [
   {

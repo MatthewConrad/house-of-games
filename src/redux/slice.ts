@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { GameState, Rounds } from "../types";
+import { GameState, Rounds } from "../types/gameState";
 
 const initialState: GameState = {
   players: [

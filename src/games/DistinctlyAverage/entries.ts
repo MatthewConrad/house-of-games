@@ -1,4 +1,4 @@
-import { NumberClueEntry } from "../types";
+import { NumberClueEntry } from "../../types/gameState";
 
 export const DISTINCTLY_AVERAGE_ENTRIES: NumberClueEntry[] = [
   {

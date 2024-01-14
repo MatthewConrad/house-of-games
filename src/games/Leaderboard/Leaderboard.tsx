@@ -1,5 +1,5 @@
-import { ControlsContainer, Footer, PageWrapper } from "../App.presenter";
-import { useGameActions, useGameState } from "../redux/hooks";
+import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
+import { useGameActions, useGameState } from "../../redux/hooks";
 import { LeaderboardWrapper, PlayerItem, PlayerName, Score } from "./presenter";
 
 export const Leaderboard = () => {

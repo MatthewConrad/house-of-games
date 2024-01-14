@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SetupContainer } from "./presenter";
-import { useGameActions } from "../redux/hooks";
+import { useGameActions } from "../../redux/hooks";
 
 export const PlayersSetup = () => {
   const { handleSetPlayers } = useGameActions();

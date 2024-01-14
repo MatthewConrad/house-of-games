@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Answer } from "../App.presenter";
+import { Answer } from "../../App.presenter";
 
 export const CODE_WIDTH = 100;
 

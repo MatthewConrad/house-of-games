@@ -9,16 +9,16 @@ import {
   CodeWrapper,
   FrameWrapper,
 } from "./presenter";
-import { RoundProps, Rounds } from "../types";
-import { ControlsContainer, Footer, PageWrapper } from "../App.presenter";
+import { RoundProps, Rounds } from "../../types/gameState";
+import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
 import { CSSTransition } from "react-transition-group";
 import {
   useGameActions,
   usePlayersSelector,
   useRoundSelector,
-} from "../redux/hooks";
-import { RoundIntro } from "../RoundIntro/RoundIntro";
-import { Frame } from "../components/Frame";
+} from "../../redux/hooks";
+import { RoundIntro } from "../../components/RoundIntro/RoundIntro";
+import { Frame } from "../../components/Frame";
 
 export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();

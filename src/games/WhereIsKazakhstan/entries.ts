@@ -1,4 +1,4 @@
-import { ImageClueEntry } from "../types";
+import { ImageClueEntry } from "../../types/gameState";
 
 // TODO -- check how these questions are formatted
 export const MAP_ENTRIES: ImageClueEntry[] = [

@@ -1,4 +1,4 @@
-import { ImageClueEntry } from "../types";
+import { ImageClueEntry } from "../../types/gameState";
 
 export const ANSWER_SMASH_ENTRIES: Record<string, Required<ImageClueEntry>[]> =
   {

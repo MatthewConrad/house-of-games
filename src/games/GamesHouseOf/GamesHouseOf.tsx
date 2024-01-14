@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RoundProps, Rounds } from "../types";
+import { RoundProps, Rounds } from "../../types/gameState";
 import { GAMES_HOUSE_OF_ENTRIES } from "./entries";
 import { alphabetize } from ".";
 import {
@@ -8,13 +8,13 @@ import {
   ControlsContainer,
   Footer,
   PageWrapper,
-} from "../App.presenter";
+} from "../../App.presenter";
 import {
   useGameActions,
   usePlayersSelector,
   useRoundSelector,
-} from "../redux/hooks";
-import { RoundIntro } from "../RoundIntro/RoundIntro";
+} from "../../redux/hooks";
+import { RoundIntro } from "../../components/RoundIntro/RoundIntro";
 
 export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
