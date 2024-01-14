@@ -1,11 +1,9 @@
 import { styled } from "styled-components";
-import { ChildrenProps, ClassNameProps } from "../types/ui";
+import { AnimatedComponentProps } from "../types/ui";
 import { useRef } from "react";
 import { CSSTransition } from "react-transition-group";
-import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 
-interface FrameProps extends ChildrenProps, ClassNameProps {
-  animationProps?: CSSTransitionProps;
+interface FrameProps extends AnimatedComponentProps {
   width?: number;
   isAnswer?: boolean;
 }
