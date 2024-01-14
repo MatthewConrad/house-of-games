@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { CODE_ENTRIES } from "./entries";
 import { stringToCodeWords } from "./helpers";
 import {
@@ -26,10 +26,11 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
 
   const [categoryIndex, setCategoryIndex] = useState(0);
   const [showCategory, setShowCategory] = useState(true);
+  const [nextCategory, setNextCategory] = useState(0);
   const [clueIndex, setClueIndex] = useState(0);
-  const [showClue, setShowClue] = useState(true);
+  const [nextClue, setNextClue] = useState(0);
+  const [showClue, setShowClue] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const frameRef = useRef<HTMLDivElement>(null);
   const codeRef = useRef<HTMLDivElement>(null);
   const answerRef = useRef<HTMLDivElement>(null);
 
@@ -40,116 +41,143 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
 
   const codeWords = stringToCodeWords(clue);
 
-  const handleAdvanceRound = () => {
-    setShowAnswer(false);
+  const resetClue = () => {
     setShowClue(false);
+    setShowAnswer(false);
+  };
+
+  const handleAdvanceRound = () => {
+    resetClue();
 
     if (!showClue && clueIndex === 0) {
       setShowClue(true);
     } else {
       if (clueIndex < clues.length - 1) {
-        setClueIndex((i) => i + 1);
+        setNextClue((i) => i + 1);
       } else {
-        if (categoryIndex < categories.length - 1) {
+        if (categoryIndex < categories.length) {
           setShowCategory(false);
-          setCategoryIndex((i) => i + 1);
-          setClueIndex(0);
-        } else {
-          onRoundEnd();
+          setNextCategory((i) => i + 1);
+          setNextClue(0);
         }
       }
     }
   };
 
   const handleStepBack = () => {
-    setShowAnswer(false);
-    setShowClue(false);
+    resetClue();
     if (clueIndex > 0) {
-      setClueIndex((i) => i - 1);
+      setNextClue((i) => i - 1);
     } else {
       if (categoryIndex > 0) {
-        setCategoryIndex((i) => i - 1);
-        setClueIndex(categories[categoryIndex - 1][1].length - 1);
+        setShowCategory(false);
+        setNextCategory((i) => i - 1);
+        setNextClue(categories[categoryIndex - 1][1].length - 1);
       }
     }
   };
 
-  useEffect(() => {
-    if (!showCategory && categoryIndex !== 0) {
-      setShowCategory(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryIndex]);
+  const showNextClue = () => {
+    setClueIndex(nextClue);
+    setShowClue(true);
+  };
 
-  useEffect(() => {
-    if (!showClue && clueIndex !== 0) {
-      setShowClue(true);
+  const showNextCategory = () => {
+    setCategoryIndex(nextCategory);
+    setShowCategory(true);
+  };
+
+  const handleCategoryTransition = () => {
+    if (nextCategory === categories.length) {
+      onRoundEnd();
+    } else {
+      showNextCategory();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clueIndex]);
+  };
+
+  const handleClueTransition = () => {
+    if (nextClue < clues.length && nextClue >= 0) {
+      showNextClue();
+    }
+  };
 
   return (
     <PageWrapper>
-      <Frame animationIn={showCategory} width={950}>
+      <Frame
+        animationProps={{
+          in: showCategory,
+          timeout: 1000,
+          onExited: handleCategoryTransition,
+        }}
+        width={950}
+      >
         <span>{category}</span>
       </Frame>
-      {showClue && (
-        <AnimationHelper>
-          <FrameWrapper ref={frameRef}>
+      <AnimationHelper>
+        <FrameWrapper>
+          {codeWords.map((word, index) => (
+            <CodeWordContainer key={category + index + "helper"}>
+              {word.map((codeChar, charIndex) => (
+                <Frame
+                  animationProps={{
+                    in: showClue,
+                    timeout: 1000,
+                    onExited: handleClueTransition,
+                  }}
+                  isAnswer
+                  width={CODE_WIDTH}
+                  key={index + codeChar.char + charIndex + "helper"}
+                />
+              ))}
+            </CodeWordContainer>
+          ))}
+        </FrameWrapper>
+        <CSSTransition
+          nodeRef={codeRef}
+          in={!showAnswer}
+          appear
+          mountOnEnter
+          unmountOnExit
+          timeout={1000}
+        >
+          <CodeWrapper ref={codeRef}>
             {codeWords.map((word, index) => (
-              <CodeWordContainer key={category + index + "helper"}>
+              <CodeWordContainer key={category + index + "code"}>
+                {word.map((codeChar, charIndex) => {
+                  console.log(
+                    `index: ${index} | code: ${codeChar.code} | char index: ${charIndex}`
+                  );
+                  return (
+                    <CodeAnswer key={`${index}${codeChar.code}${charIndex}`}>
+                      {codeChar.code}
+                    </CodeAnswer>
+                  );
+                })}
+              </CodeWordContainer>
+            ))}
+          </CodeWrapper>
+        </CSSTransition>
+        <CSSTransition
+          nodeRef={answerRef}
+          in={showAnswer}
+          appear
+          mountOnEnter
+          unmountOnExit
+          timeout={1000}
+        >
+          <CodeWrapper ref={answerRef}>
+            {codeWords.map((word, index) => (
+              <CodeWordContainer key={category + index + "char"}>
                 {word.map((codeChar, charIndex) => (
-                  <Frame
-                    isAnswer
-                    width={CODE_WIDTH}
-                    key={index + codeChar.char + charIndex + "helper"}
-                  />
+                  <CodeAnswer key={index + codeChar.char + charIndex}>
+                    {codeChar.char}
+                  </CodeAnswer>
                 ))}
               </CodeWordContainer>
             ))}
-          </FrameWrapper>
-          <CSSTransition
-            nodeRef={codeRef}
-            in={!showAnswer}
-            appear
-            mountOnEnter
-            unmountOnExit
-            timeout={1000}
-          >
-            <CodeWrapper ref={codeRef}>
-              {codeWords.map((word, index) => (
-                <CodeWordContainer key={category + index + "code"}>
-                  {word.map((codeChar, charIndex) => (
-                    <CodeAnswer key={index + codeChar.code + charIndex}>
-                      {codeChar.code}
-                    </CodeAnswer>
-                  ))}
-                </CodeWordContainer>
-              ))}
-            </CodeWrapper>
-          </CSSTransition>
-          <CSSTransition
-            nodeRef={answerRef}
-            in={showAnswer}
-            appear
-            mountOnEnter
-            unmountOnExit
-            timeout={1000}
-          >
-            <CodeWrapper ref={answerRef}>
-              {codeWords.map((word, index) => (
-                <CodeWordContainer key={category + index + "char"}>
-                  {word.map((codeChar, charIndex) => (
-                    <CodeAnswer key={index + codeChar.char + charIndex}>
-                      {codeChar.char}
-                    </CodeAnswer>
-                  ))}
-                </CodeWordContainer>
-              ))}
-            </CodeWrapper>
-          </CSSTransition>
-        </AnimationHelper>
-      )}
+          </CodeWrapper>
+        </CSSTransition>
+      </AnimationHelper>
 
       <Footer>
         <ControlsContainer>

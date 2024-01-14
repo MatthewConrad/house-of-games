@@ -2,10 +2,10 @@ import { styled } from "styled-components";
 import { ChildrenProps, ClassNameProps } from "../types/ui";
 import { useRef } from "react";
 import { CSSTransition } from "react-transition-group";
+import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 
 interface FrameProps extends ChildrenProps, ClassNameProps {
-  animationIn?: boolean;
-  animationTimeout?: number;
+  animationProps?: CSSTransitionProps;
   width?: number;
   isAnswer?: boolean;
 }
@@ -45,6 +45,8 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
     box-shadow 1s ease-in-out, opacity 0.1s ease-in-out;
   z-index: 1;
 
+  &.appear,
+  &.appear-done,
   &.enter,
   &.enter-done {
     width: ${({ $width = DEFAULT_WIDTH }) => `${$width}px`};
@@ -57,14 +59,14 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
 
   &.exit,
   &.exit-done {
-    transition: opacity 0.25s ease-in-out;
     opacity: 0;
+    transition: opacity 0.25s ease-in-out 0s, width 0s ease-in-out 0.25s,
+      padding 0s ease-in-out 0.25s, box-shadow 0s ease-in-out 0.25s;
   }
 `;
 
 export const Frame = ({
-  animationIn = true,
-  animationTimeout = 0,
+  animationProps,
   width,
   isAnswer,
   children,
@@ -76,11 +78,11 @@ export const Frame = ({
     <StaticWidthHelper $width={width}>
       <CSSTransition
         nodeRef={ref}
-        timeout={animationTimeout}
-        in={animationIn}
+        in
         appear
         mountOnEnter
-        unmountOnExit
+        timeout={0}
+        {...animationProps}
       >
         <Main
           ref={ref}
