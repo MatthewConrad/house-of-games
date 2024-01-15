@@ -1,15 +1,11 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ROUND_NAMES } from "../../games/rounds";
 import { Rounds } from "../../types/gameState";
-import { CSSTransition } from "react-transition-group";
 import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
-import {
-  AnimationHelper,
-  Diamond,
-  IntroWrapper,
-  RoundTitle,
-} from "./presenter";
+import { IntroWrapper, RoundTitle } from "./presenter";
 import { useGameActions } from "../../redux/hooks";
+import { SpinDiamond } from "../SpinDiamond";
+import { FlipText } from "../FlipText";
 
 interface IntroProps {
   round: Rounds;
@@ -18,26 +14,23 @@ interface IntroProps {
 export const RoundIntro = ({ round }: IntroProps) => {
   const { handleBeginRound } = useGameActions();
 
-  const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
 
   return (
     <PageWrapper>
       <IntroWrapper>
-        <CSSTransition
-          nodeRef={ref}
-          in={visible}
-          appear
-          mountOnEnter
-          unmountOnExit
-          onExited={() => handleBeginRound()}
-          timeout={visible ? 0 : 1000}
+        <SpinDiamond
+          animationProps={{
+            in: visible,
+            unmountOnExit: true,
+            timeout: 1000,
+            onExited: handleBeginRound,
+          }}
         >
-          <AnimationHelper ref={ref}>
-            <Diamond />
+          <FlipText>
             <RoundTitle>{ROUND_NAMES[round]}</RoundTitle>
-          </AnimationHelper>
-        </CSSTransition>
+          </FlipText>
+        </SpinDiamond>
       </IntroWrapper>
       <Footer>
         <ControlsContainer style={{ marginLeft: "auto" }}>

@@ -14,7 +14,7 @@ import {
   usePlayersSelector,
   useRoundSelector,
 } from "../../redux/hooks";
-import { RoundIntro } from "../../components/RoundIntro/RoundIntro";
+import { RoundIntro } from "../../components/RoundIntro";
 
 export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
