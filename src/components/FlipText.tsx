@@ -3,9 +3,15 @@ import { AnimatedComponentProps } from "../types/ui";
 import { CSSTransition } from "react-transition-group";
 import { css, styled } from "styled-components";
 
-interface FlipTextProps extends AnimatedComponentProps {}
+interface FlipTextProps extends AnimatedComponentProps {
+  width?: number;
+}
 
-export const Main = styled.div<{ $delayIn?: number; $delayOut?: number }>`
+export const Main = styled.div<{
+  $delayIn?: number;
+  $delayOut?: number;
+  $width?: number;
+}>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,7 +20,7 @@ export const Main = styled.div<{ $delayIn?: number; $delayOut?: number }>`
   font-size: 1.5em;
   min-width: 100px;
   min-height: 100px;
-  width: fit-content;
+  width: ${({ $width }) => ($width ? `${$width}px` : "fit-content")};
 
   opacity: 0;
   transform: rotateX(-90deg);
@@ -42,6 +48,7 @@ export const Main = styled.div<{ $delayIn?: number; $delayOut?: number }>`
 
 export const FlipText = ({
   animationProps,
+  width,
   children,
   className,
 }: FlipTextProps) => {
@@ -64,6 +71,7 @@ export const FlipText = ({
           className={className}
           $delayIn={delayIn}
           $delayOut={delayOut}
+          $width={width}
         >
           {children}
         </Main>

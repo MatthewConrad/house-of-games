@@ -1,113 +1,182 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { RoundProps, Rounds } from "../../types/gameState";
 import { ANSWER_SMASH_ENTRIES } from "./entries";
-import { ImageClue, ImageTransform } from "./presenter";
-import { CSSTransition } from "react-transition-group";
-import { Clue, ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
+import { ImageClue, ImageDiamond } from "./presenter";
+import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
 import {
   useGameActions,
   usePlayersSelector,
   useRoundSelector,
 } from "../../redux/hooks";
 import { RoundIntro } from "../../components/RoundIntro";
+import { Frame } from "../../components/Frame";
+import { FlipText } from "../../components/FlipText";
 
 export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
   const { handleAwardPoint } = useGameActions();
 
-  const categoryRef = useRef<HTMLDivElement>(null);
-  const clueRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const answerRef = useRef<HTMLDivElement>(null);
-
-  const [inCategory, setInCategory] = useState(true);
+  const [startedCategory, setStartedCategory] = useState(false);
+  const [showCategory, setShowCategory] = useState(true);
   const [categoryIndex, setCategoryIndex] = useState(0);
+  const [nextCategory, setNextCategory] = useState(0);
   const [clueIndex, setClueIndex] = useState(0);
+  const [nextClue, setNextClue] = useState(0);
+  const [showClue, setShowClue] = useState(false);
+  const [showImage, setShowImage] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [showClue, setShowClue] = useState(true);
 
   const categories = Object.entries(ANSWER_SMASH_ENTRIES);
 
   const [category, clues] = categories[categoryIndex];
   const { clue, src, answer } = clues[clueIndex];
 
-  const handleAdvanceRound = () => {
-    setShowAnswer(false);
+  const resetClue = () => {
     setShowClue(false);
-    if (!inCategory && clueIndex === 0) {
-      setInCategory(true);
-      setShowClue(true);
+    setShowImage(false);
+    setShowAnswer(false);
+  };
+
+  const handleStartCategory = () => {
+    setStartedCategory(true);
+    setClueIndex(0);
+    setShowClue(true);
+  };
+
+  const handleAdvanceRound = () => {
+    if (showCategory) {
+      console.log(`reset show category`);
+      setShowCategory(false);
     } else {
-      if (clueIndex < clues.length - 1) {
-        setClueIndex((i) => i + 1);
+      resetClue();
+
+      if (clueIndex < clues.length) {
+        setNextClue((i) => i + 1);
       } else {
-        if (categoryIndex < categories.length - 1) {
-          setCategoryIndex((i) => i + 1);
-          setClueIndex(0);
-          setInCategory(false);
-        } else {
-          onRoundEnd();
+        if (categoryIndex < categories.length) {
+          setNextCategory((i) => i + 1);
+          setNextClue(0);
+          setShowCategory(true);
         }
       }
     }
   };
 
   const handleStepBack = () => {
-    setShowAnswer(false);
-    setShowClue(false);
+    resetClue();
     if (clueIndex > 0) {
-      setClueIndex((i) => i - 1);
+      setNextClue((i) => i - 1);
     } else {
       if (categoryIndex > 0) {
-        setCategoryIndex((i) => i - 1);
-        setClueIndex(categories[categoryIndex - 1][1].length - 1);
+        setNextCategory((i) => i - 1);
+        setNextClue(categories[categoryIndex - 1][1].length - 1);
       }
     }
   };
 
-  useEffect(() => {
-    if (!showClue && clueIndex !== 0) {
-      setShowClue(true);
+  const showNextClue = () => {
+    setClueIndex(nextClue);
+    setShowClue(true);
+  };
+
+  const showNextCategory = () => {
+    console.log(`set category index to next category, reset visibilities`);
+    setCategoryIndex(nextCategory);
+    setStartedCategory(false);
+    setShowCategory(true);
+  };
+
+  const handleCategoryTransition = () => {
+    if (nextCategory === categories.length) {
+      onRoundEnd();
+    } else {
+      console.log("category transitioned, not in last category");
+      showNextCategory();
     }
+  };
+
+  const handleClueTransition = () => {
+    if (nextClue < clues.length && nextClue >= 0) {
+      showNextClue();
+    } else if (nextClue === clues.length) {
+      console.log("next clue was the last, so set category");
+      setNextCategory((i) => i + 1);
+    }
+  };
+
+  useEffect(() => {
+    handleCategoryTransition();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clueIndex, inCategory]);
+  }, [nextCategory]);
 
   return (
-    <PageWrapper style={!inCategory ? { justifyContent: "center" } : undefined}>
-      {!inCategory ? (
-        <CSSTransition nodeRef={categoryRef} in appear timeout={0}>
-          <Clue ref={categoryRef}>
-            <span>{category}</span>
-          </Clue>
-        </CSSTransition>
+    <PageWrapper
+      style={!startedCategory ? { justifyContent: "center" } : { gap: "5rem" }}
+    >
+      {!startedCategory ? (
+        <Frame
+          animationProps={{
+            in: showCategory,
+            timeout: 1000,
+            unmountOnExit: true,
+            onExited: handleStartCategory,
+          }}
+          width={900}
+        >
+          <FlipText
+            animationProps={{
+              in: showCategory,
+              timeout: 1500,
+              delayIn: 1000,
+              delayOut: 0,
+            }}
+            width={900}
+          >
+            {category}
+          </FlipText>
+        </Frame>
       ) : (
-        showClue && (
-          <>
-            <CSSTransition nodeRef={clueRef} in={true} appear timeout={0}>
-              <Clue ref={clueRef}>
-                <span>{clue}</span>
-              </Clue>
-            </CSSTransition>
-            <CSSTransition nodeRef={imageRef} in={true} appear timeout={0}>
-              <ImageTransform ref={imageRef}>
-                <ImageClue $src={src} />
-              </ImageTransform>
-            </CSSTransition>
+        <>
+          <Frame
+            animationProps={{
+              in: showClue,
+              timeout: 1000,
+              onEntered: () => setShowImage(true),
+              onExited: handleClueTransition,
+            }}
+            width={900}
+          >
+            <span>{clue}</span>
+          </Frame>
+          <ImageDiamond
+            animationProps={{
+              in: showImage,
+              timeout: 1000,
+            }}
+          >
+            <ImageClue $src={src} />
+          </ImageDiamond>
 
-            <CSSTransition
-              nodeRef={answerRef}
-              in={showAnswer}
-              appear
-              timeout={0}
+          <Frame
+            animationProps={{
+              in: showAnswer,
+              timeout: 1000,
+            }}
+            width={900}
+          >
+            <FlipText
+              animationProps={{
+                in: showAnswer,
+                timeout: 1500,
+                delayIn: 1000,
+                delayOut: 0,
+              }}
             >
-              <Clue ref={answerRef}>
-                <span>{answer}</span>
-              </Clue>
-            </CSSTransition>
-          </>
-        )
+              {answer}
+            </FlipText>
+          </Frame>
+        </>
       )}
-
       <Footer>
         <ControlsContainer>
           {players.map((player, index) => (

@@ -81,7 +81,16 @@ export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
         }}
         width={900}
       >
-        <span>{clue}</span>
+        <FlipText
+          animationProps={{
+            in: showClue,
+            timeout: 1500,
+            delayIn: 1000,
+            delayOut: 0,
+          }}
+        >
+          {clue}
+        </FlipText>
       </Frame>
       <Frame animationProps={{ in: showAnswer, timeout: 1000 }}>
         <AnimationOverlapHelper>
