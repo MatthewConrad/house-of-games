@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { CSSTransition } from "react-transition-group";
 
 import { RoundIntro } from "../../components/RoundIntro";
@@ -56,12 +56,9 @@ export const DistinctlyAverageGame = ({ onRoundEnd }: RoundProps) => {
     }
   };
 
-  useEffect(() => {
-    if (!showClue && clueIndex !== 0) {
-      setShowClue(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clueIndex]);
+  if (!showClue && clueIndex !== 0) {
+    setShowClue(true);
+  }
 
   const averageOne = (pairOne[0] + pairOne[1]) / 2;
   const averageTwo = (pairTwo[0] + pairTwo[1]) / 2;

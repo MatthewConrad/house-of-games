@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { FlipText } from "../../components/FlipText";
 import { Frame } from "../../components/Frame";
@@ -21,9 +21,7 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const [startedCategory, setStartedCategory] = useState(false);
   const [showCategory, setShowCategory] = useState(true);
   const [categoryIndex, setCategoryIndex] = useState(0);
-  const [nextCategory, setNextCategory] = useState(0);
   const [clueIndex, setClueIndex] = useState(0);
-  const [nextClue, setNextClue] = useState(0);
   const [showClue, setShowClue] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -33,19 +31,69 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const [category, clues] = categories[categoryIndex];
   const { clue, src, answer } = clues[clueIndex];
 
+  console.log("state???", {
+    startedCategory,
+    showCategory,
+    categoryIndex,
+    clueIndex,
+    showClue,
+    showImage,
+    showAnswer,
+  });
+
   const resetClue = () => {
+    console.log("reset clue");
     setShowClue(false);
     setShowImage(false);
     setShowAnswer(false);
   };
 
   const handleStartCategory = () => {
+    console.log("handle start category");
     setStartedCategory(true);
     setClueIndex(0);
     setShowClue(true);
   };
 
+  const handleStepBack = () => {
+    console.log("handle step back");
+    resetClue();
+    if (clueIndex > 0) {
+      setClueIndex((i) => i - 1);
+    } else {
+      if (categoryIndex > 0) {
+        setCategoryIndex((i) => i - 1);
+        setClueIndex(categories[categoryIndex - 1][1].length - 1);
+      }
+    }
+  };
+
+  const handleNextCategory = () => {
+    console.log("handle next category");
+    if (categoryIndex === categories.length - 1) {
+      onRoundEnd();
+    } else {
+      console.log("category transitioned, not in last category");
+      setCategoryIndex((i) => i + 1);
+      setStartedCategory(false);
+      setClueIndex(0);
+      setShowCategory(true);
+    }
+  };
+
+  const handleClueTransition = () => {
+    console.log("handle clue transition");
+    if (clueIndex < clues.length - 1 && clueIndex >= 0) {
+      setClueIndex((i) => i + 1);
+      setShowClue(true);
+    } else if (clueIndex === clues.length - 1) {
+      console.log("next clue was the last, so set category");
+      handleNextCategory();
+    }
+  };
+
   const handleAdvanceRound = () => {
+    console.log("handle advance round");
     if (showCategory) {
       console.log(`reset show category`);
       setShowCategory(false);
@@ -53,63 +101,12 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
       resetClue();
 
       if (clueIndex < clues.length) {
-        setNextClue((i) => i + 1);
+        setClueIndex((i) => i + 1);
       } else {
-        if (categoryIndex < categories.length) {
-          setNextCategory((i) => i + 1);
-          setNextClue(0);
-          setShowCategory(true);
-        }
+        handleNextCategory();
       }
     }
   };
-
-  const handleStepBack = () => {
-    resetClue();
-    if (clueIndex > 0) {
-      setNextClue((i) => i - 1);
-    } else {
-      if (categoryIndex > 0) {
-        setNextCategory((i) => i - 1);
-        setNextClue(categories[categoryIndex - 1][1].length - 1);
-      }
-    }
-  };
-
-  const showNextClue = () => {
-    setClueIndex(nextClue);
-    setShowClue(true);
-  };
-
-  const showNextCategory = () => {
-    console.log(`set category index to next category, reset visibilities`);
-    setCategoryIndex(nextCategory);
-    setStartedCategory(false);
-    setShowCategory(true);
-  };
-
-  const handleCategoryTransition = () => {
-    if (nextCategory === categories.length) {
-      onRoundEnd();
-    } else {
-      console.log("category transitioned, not in last category");
-      showNextCategory();
-    }
-  };
-
-  const handleClueTransition = () => {
-    if (nextClue < clues.length && nextClue >= 0) {
-      showNextClue();
-    } else if (nextClue === clues.length) {
-      console.log("next clue was the last, so set category");
-      setNextCategory((i) => i + 1);
-    }
-  };
-
-  useEffect(() => {
-    handleCategoryTransition();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nextCategory]);
 
   return (
     <PageWrapper

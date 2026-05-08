@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { FlipText } from "../../components/FlipText";
 import { Frame } from "../../components/Frame";
@@ -63,15 +63,13 @@ export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
     }
   };
 
-  useEffect(() => {
-    if (showAnswer) {
-      const timeout = setTimeout(() => {
-        setShowUnsorted(true);
-      }, 4000);
+  const handleReveal = () => {
+    setShowAnswer(true);
 
-      return () => clearTimeout(timeout);
-    }
-  }, [showAnswer]);
+    setTimeout(() => {
+      setShowUnsorted(true);
+    }, 4000);
+  };
 
   return (
     <PageWrapper>
@@ -133,7 +131,7 @@ export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
         </ControlsContainer>
         <ControlsContainer>
           <button onClick={handleStepBack}>Previous Clue</button>
-          <button onClick={() => setShowAnswer(true)}>Reveal</button>
+          <button onClick={handleReveal}>Reveal</button>
           <button onClick={handleAdvanceRound}>Advance</button>
         </ControlsContainer>
       </Footer>
