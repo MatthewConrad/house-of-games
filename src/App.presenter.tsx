@@ -11,13 +11,16 @@ export const Clue = styled.div`
 
   height: 160px;
   border: 4px solid #f1ca86;
-  box-shadow: inset 8px 8px 16px 0 rgba(0, 0, 0, 0.15),
+  box-shadow:
+    inset 8px 8px 16px 0 rgba(0, 0, 0, 0.15),
     inset -8px -8px 16px 0 rgba(0, 0, 0, 0.15);
 
   width: 0;
   opacity: 0;
 
-  transition: width 1s ease-in-out, opacity 0.5s ease-in-out;
+  transition:
+    width 1s ease-in-out,
+    opacity 0.5s ease-in-out;
 
   span {
     min-width: 950px;
@@ -25,7 +28,9 @@ export const Clue = styled.div`
 
     opacity: 0;
     transform: perspective(400px) rotateX(90deg);
-    transition: transform 0.75s ease-in-out, opacity 0.75s ease-in-out;
+    transition:
+      transform 0.75s ease-in-out,
+      opacity 0.75s ease-in-out;
     transition-delay: 0.75s;
   }
 

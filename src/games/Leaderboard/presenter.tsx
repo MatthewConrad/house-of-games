@@ -22,7 +22,10 @@ export const PlayerItem = styled.div`
 
 export const PlayerName = styled.div`
   font-size: 2em;
-  text-shadow: -1px -1px 0 #f21212, 1px -1px 0 #f21212, -1px 1px 0 #f21212,
+  text-shadow:
+    -1px -1px 0 #f21212,
+    1px -1px 0 #f21212,
+    -1px 1px 0 #f21212,
     1px 1px 0 #f21212;
 `;
 

@@ -1,4 +1,16 @@
 import { useState } from "react";
+
+import { FlipText } from "../../components/FlipText";
+import { Frame } from "../../components/Frame";
+import { RoundIntro } from "../../components/RoundIntro";
+
+import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
+import {
+  useGameActions,
+  usePlayersSelector,
+  useRoundSelector,
+} from "../../redux/hooks";
+import { RoundProps, Rounds } from "../../types/gameState";
 import { CODE_ENTRIES } from "./entries";
 import { stringToCodeWords } from "./helpers";
 import {
@@ -7,16 +19,6 @@ import {
   CodeWordContainer,
   CodeWrapper,
 } from "./presenter";
-import { RoundProps, Rounds } from "../../types/gameState";
-import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
-import {
-  useGameActions,
-  usePlayersSelector,
-  useRoundSelector,
-} from "../../redux/hooks";
-import { RoundIntro } from "../../components/RoundIntro";
-import { Frame } from "../../components/Frame";
-import { FlipText } from "../../components/FlipText";
 
 export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();

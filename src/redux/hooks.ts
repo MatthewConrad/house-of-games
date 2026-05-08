@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./store";
+
 import {
   awardPoint,
   beginRound,
@@ -8,6 +8,7 @@ import {
   introduceNextRound,
   setPlayers,
 } from "./slice";
+import { RootState } from "./store";
 
 export const usePlayersSelector = () =>
   useSelector(({ gameState }: RootState) => gameState.players);

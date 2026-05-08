@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
-import { RoundProps, Rounds } from "../../types/gameState";
-import { GAMES_HOUSE_OF_ENTRIES } from "./entries";
-import { alphabetize } from "./helpers";
+
+import { FlipText } from "../../components/FlipText";
+import { Frame } from "../../components/Frame";
+import { AnimationOverlapHelper } from "../../components/Presentation";
+import { RoundIntro } from "../../components/RoundIntro";
+
 import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
 import {
   useGameActions,
   usePlayersSelector,
   useRoundSelector,
 } from "../../redux/hooks";
-import { RoundIntro } from "../../components/RoundIntro";
-import { Frame } from "../../components/Frame";
-import { AnimationOverlapHelper } from "../../components/Presentation";
-import { FlipText } from "../../components/FlipText";
+import { RoundProps, Rounds } from "../../types/gameState";
+import { GAMES_HOUSE_OF_ENTRIES } from "./entries";
+import { alphabetize } from "./helpers";
 
 export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();

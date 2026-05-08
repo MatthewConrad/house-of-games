@@ -1,11 +1,11 @@
 import { AnswerSmash } from "./games/AnswerSmash/AnswerSmash";
-import { GamesHouseOf } from "./games/GamesHouseOf/GamesHouseOf";
-import { RoundInCode } from "./games/RoundInCode/RoundInCode";
-import { Rounds } from "./types/gameState";
-import { PlayersSetup } from "./games/GameSetup/Players";
 import { DistinctlyAverage } from "./games/DistinctlyAverage/DistinctlyAverage";
-import { useGameActions, useGameState } from "./redux/hooks";
+import { PlayersSetup } from "./games/GameSetup/Players";
+import { GamesHouseOf } from "./games/GamesHouseOf/GamesHouseOf";
 import { Leaderboard } from "./games/Leaderboard/Leaderboard";
+import { RoundInCode } from "./games/RoundInCode/RoundInCode";
+import { useGameActions, useGameState } from "./redux/hooks";
+import { Rounds } from "./types/gameState";
 
 const ROUND_COMPONENTS = {
   [Rounds.ROUND_IN_CODE]: RoundInCode,

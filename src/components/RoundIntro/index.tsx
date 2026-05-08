@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { ROUND_NAMES } from "../../games/rounds";
-import { Rounds } from "../../types/gameState";
+
 import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
-import { IntroWrapper, RoundTitle } from "./presenter";
+import { ROUND_NAMES } from "../../games/rounds";
 import { useGameActions } from "../../redux/hooks";
-import { SpinDiamond } from "../SpinDiamond";
+import { Rounds } from "../../types/gameState";
 import { FlipText } from "../FlipText";
+import { SpinDiamond } from "../SpinDiamond";
+import { IntroWrapper, RoundTitle } from "./presenter";
 
 interface IntroProps {
   round: Rounds;

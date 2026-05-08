@@ -1,7 +1,8 @@
 import { useRef } from "react";
-import { AnimatedComponentProps } from "../types/ui";
 import { CSSTransition } from "react-transition-group";
 import { styled } from "styled-components";
+
+import { AnimatedComponentProps } from "../types/ui";
 
 interface SpinDiamondProps extends AnimatedComponentProps {
   size?: number;
@@ -23,7 +24,9 @@ const Main = styled.div<{ $size?: number }>`
 
   opacity: 0;
   transform: scale3d(0.25, 0.25, 1) rotate(-270deg);
-  transition: transform 1s ease-in-out, opacity 0.1s ease-in-out;
+  transition:
+    transform 1s ease-in-out,
+    opacity 0.1s ease-in-out;
 
   &.appear,
   &.appear-done,
@@ -37,7 +40,9 @@ const Main = styled.div<{ $size?: number }>`
   &.exit-done {
     opacity: 0;
     transform: scale3d(0.25, 0.25, 1) rotate(-45deg);
-    transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+    transition:
+      transform 1s ease-in-out,
+      opacity 1s ease-in-out;
   }
 `;
 

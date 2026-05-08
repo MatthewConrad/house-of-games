@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
-import { RoundProps, Rounds } from "../../types/gameState";
-import { ANSWER_SMASH_ENTRIES } from "./entries";
-import { ImageClue, ImageDiamond } from "./presenter";
+
+import { FlipText } from "../../components/FlipText";
+import { Frame } from "../../components/Frame";
+import { RoundIntro } from "../../components/RoundIntro";
+
 import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
 import {
   useGameActions,
   usePlayersSelector,
   useRoundSelector,
 } from "../../redux/hooks";
-import { RoundIntro } from "../../components/RoundIntro";
-import { Frame } from "../../components/Frame";
-import { FlipText } from "../../components/FlipText";
+import { RoundProps, Rounds } from "../../types/gameState";
+import { ANSWER_SMASH_ENTRIES } from "./entries";
+import { ImageClue, ImageDiamond } from "./presenter";
 
 export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();

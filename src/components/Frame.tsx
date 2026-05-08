@@ -1,7 +1,8 @@
-import { styled } from "styled-components";
-import { AnimatedComponentProps } from "../types/ui";
 import { useRef } from "react";
 import { CSSTransition } from "react-transition-group";
+import { styled } from "styled-components";
+
+import { AnimatedComponentProps } from "../types/ui";
 
 interface FrameProps extends AnimatedComponentProps {
   width?: number;
@@ -36,11 +37,15 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
   width: 0;
   padding: 2em 0;
   opacity: 0;
-  box-shadow: inset 8px 8px 16px 0 rgba(0, 0, 0, 0),
+  box-shadow:
+    inset 8px 8px 16px 0 rgba(0, 0, 0, 0),
     inset -8px -8px 16px 0 rgba(0, 0, 0, 0);
 
-  transition: width 1s ease-in-out, padding 1s ease-in-out,
-    box-shadow 1s ease-in-out, opacity 0.1s ease-in-out;
+  transition:
+    width 1s ease-in-out,
+    padding 1s ease-in-out,
+    box-shadow 1s ease-in-out,
+    opacity 0.1s ease-in-out;
   z-index: 1;
 
   &.appear,
@@ -51,15 +56,19 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
     padding: 2em;
     opacity: 1;
 
-    box-shadow: inset 8px 8px 16px 0 rgba(0, 0, 0, 0.15),
+    box-shadow:
+      inset 8px 8px 16px 0 rgba(0, 0, 0, 0.15),
       inset -8px -8px 16px 0 rgba(0, 0, 0, 0.15);
   }
 
   &.exit,
   &.exit-done {
     opacity: 0;
-    transition: opacity 0.25s ease-in-out 0s, width 0s ease-in-out 0.25s,
-      padding 0s ease-in-out 0.25s, box-shadow 0s ease-in-out 0.25s;
+    transition:
+      opacity 0.25s ease-in-out 0s,
+      width 0s ease-in-out 0.25s,
+      padding 0s ease-in-out 0.25s,
+      box-shadow 0s ease-in-out 0.25s;
   }
 `;
 

@@ -1,16 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { Clue, ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
-import { RoundProps, Rounds } from "../../types/gameState";
-
 import { CSSTransition } from "react-transition-group";
-import { DISTINCTLY_AVERAGE_ENTRIES } from "./entries";
-import { Average, InputsWrapper, TeamWrapper } from "./presenter";
+
+import { RoundIntro } from "../../components/RoundIntro";
+
+import {
+  Clue,
+  ControlsContainer,
+  Footer,
+  PageWrapper,
+} from "../../App.presenter";
 import {
   useGameActions,
   usePlayersSelector,
   useRoundSelector,
 } from "../../redux/hooks";
-import { RoundIntro } from "../../components/RoundIntro";
+import { RoundProps, Rounds } from "../../types/gameState";
+import { DISTINCTLY_AVERAGE_ENTRIES } from "./entries";
+import { Average, InputsWrapper, TeamWrapper } from "./presenter";
 
 export const DistinctlyAverageGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();

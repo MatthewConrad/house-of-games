@@ -28,7 +28,7 @@ const ALPHA_CHARS = [
 ];
 
 const CODE_MAP = Object.fromEntries(
-  ALPHA_CHARS.map((char, i) => [char, i + 1])
+  ALPHA_CHARS.map((char, i) => [char, i + 1]),
 );
 
 interface CodeChar {

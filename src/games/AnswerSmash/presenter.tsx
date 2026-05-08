@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+
 import { SpinDiamond } from "../../components/SpinDiamond";
 
 export const ImageDiamond = styled(SpinDiamond)`

@@ -1,7 +1,8 @@
 import { useRef } from "react";
-import { AnimatedComponentProps } from "../types/ui";
 import { CSSTransition } from "react-transition-group";
 import { css, styled } from "styled-components";
+
+import { AnimatedComponentProps } from "../types/ui";
 
 interface FlipTextProps extends AnimatedComponentProps {
   width?: number;
