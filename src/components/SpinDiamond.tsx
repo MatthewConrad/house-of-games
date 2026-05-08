@@ -1,5 +1,3 @@
-import { useRef } from "react";
-import { CSSTransition } from "react-transition-group";
 import { styled } from "styled-components";
 
 import { AnimatedComponentProps } from "../types/ui";
@@ -28,16 +26,13 @@ const Main = styled.div<{ $size?: number }>`
     transform 1s ease-in-out,
     opacity 0.1s ease-in-out;
 
-  &.appear,
-  &.appear-done,
-  &.enter,
-  &.enter-done {
+  &.entered {
     opacity: 1;
     transform: rotate(-45deg);
   }
 
-  &.exit,
-  &.exit-done {
+  &.exiting,
+  &.exited {
     opacity: 0;
     transform: scale3d(0.25, 0.25, 1) rotate(-45deg);
     transition:
@@ -52,25 +47,15 @@ export const ContentHelper = styled.div`
 `;
 
 export const SpinDiamond = ({
-  animationProps,
   size,
   className,
   children,
 }: SpinDiamondProps) => {
-  const ref = useRef<HTMLDivElement>(null);
+  console.log("class name??", className);
 
   return (
-    <CSSTransition
-      nodeRef={ref}
-      in
-      appear
-      mountOnEnter
-      timeout={0}
-      {...animationProps}
-    >
-      <Main ref={ref} $size={size} className={className}>
-        <ContentHelper>{children}</ContentHelper>
-      </Main>
-    </CSSTransition>
+    <Main $size={size} className={className}>
+      <ContentHelper>{children}</ContentHelper>
+    </Main>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useTransitionState } from "react-transition-state";
 
 import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
 import { ROUND_NAMES } from "../../games/rounds";
@@ -15,19 +15,25 @@ interface IntroProps {
 export const RoundIntro = ({ round }: IntroProps) => {
   const { handleBeginRound } = useGameActions();
 
-  const [visible, setVisible] = useState(true);
+  const [{ status }, toggle] = useTransitionState({
+    timeout: 1000,
+    mountOnEnter: true,
+    unmountOnExit: true,
+    onStateChange: ({ current: { status, isEnter } }) => {
+      if (status === "unmounted" && !isEnter) {
+        handleBeginRound();
+      }
+    },
+  });
+
+  if (status === "unmounted") {
+    toggle(true);
+  }
 
   return (
     <PageWrapper>
       <IntroWrapper>
-        <SpinDiamond
-          animationProps={{
-            in: visible,
-            unmountOnExit: true,
-            timeout: 1000,
-            onExited: handleBeginRound,
-          }}
-        >
+        <SpinDiamond className={status}>
           <FlipText>
             <RoundTitle>{ROUND_NAMES[round]}</RoundTitle>
           </FlipText>
@@ -35,7 +41,7 @@ export const RoundIntro = ({ round }: IntroProps) => {
       </IntroWrapper>
       <Footer>
         <ControlsContainer style={{ marginLeft: "auto" }}>
-          <button onClick={() => setVisible(false)}>Begin Round</button>
+          <button onClick={() => toggle(false)}>Begin Round</button>
         </ControlsContainer>
       </Footer>
     </PageWrapper>
