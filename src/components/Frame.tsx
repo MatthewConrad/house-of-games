@@ -1,7 +1,6 @@
-import { useRef } from "react";
 import { styled } from "styled-components";
 
-import { AnimatedComponentProps } from "../types/ui";
+import { AnimatedComponentProps, CSSVariable } from "../types/ui";
 
 interface FrameProps extends AnimatedComponentProps {
   width?: number;
@@ -14,10 +13,10 @@ const StaticWidthHelper = styled.div<{ $width?: number }>`
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: ${({ $width = DEFAULT_WIDTH }) => `${$width}px`};
+  width: var(--frame-width, ${DEFAULT_WIDTH}px);
 `;
 
-const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
+const Main = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,7 +30,7 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
   min-width: 0;
 
   border: 3px solid;
-  border-color: ${({ $isAnswer }) => ($isAnswer ? "#01b0cd" : "#f1ca86")};
+  border-color: var(--frame-border, #f1ca86);
 
   width: 0;
   padding: 2em 0;
@@ -47,13 +46,9 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
     opacity 0.1s ease-in-out;
   z-index: 1;
 
-  &.appear,
-  &.appear-done,
-  &.enter,
-  &.enter-done,
   &.entering,
   &.entered {
-    width: ${({ $width = DEFAULT_WIDTH }) => `${$width}px`};
+    width: var(--frame-width, ${DEFAULT_WIDTH}px);
     padding: 2em;
     opacity: 1;
 
@@ -63,9 +58,7 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
   }
 
   &.exiting,
-  &.exited,
-  &.exit,
-  &.exit-done {
+  &.exited {
     opacity: 0;
     transition:
       opacity 0.25s ease-in-out 0s,
@@ -73,14 +66,33 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
       padding 0s ease-in-out 0.25s,
       box-shadow 0s ease-in-out 0.25s;
   }
+
+  & .flip-text {
+    min-width: var(--frame-width, ${DEFAULT_WIDTH}px);
+  }
 `;
 
-export const Frame = ({ width, isAnswer, children, className }: FrameProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
+export const Frame = ({
+  width,
+  isAnswer,
+  children,
+  className,
+  style,
+}: FrameProps) => {
   return (
-    <StaticWidthHelper $width={width}>
-      <Main ref={ref} $width={width} $isAnswer={isAnswer} className={className}>
+    <StaticWidthHelper
+      style={
+        width ? { ["--frame-width" as CSSVariable]: `${width}px` } : undefined
+      }
+    >
+      <Main
+        className={className}
+        style={{
+          ...(width ? { ["--frame-width" as CSSVariable]: `${width}px` } : {}),
+          ...(isAnswer ? { ["--frame-border" as CSSVariable]: "#01b0cd" } : {}),
+          ...style,
+        }}
+      >
         {children}
       </Main>
     </StaticWidthHelper>

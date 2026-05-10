@@ -35,7 +35,7 @@ export const RoundIntro = ({ round }: IntroProps) => {
     <PageWrapper>
       <IntroWrapper>
         <SpinDiamond className={status}>
-          <FlipText>
+          <FlipText className={status}>
             <RoundTitle>{ROUND_NAMES[round]}</RoundTitle>
           </FlipText>
         </SpinDiamond>

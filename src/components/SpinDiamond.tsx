@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 
-import { AnimatedComponentProps } from "../types/ui";
+import { AnimatedComponentProps, CSSVariable } from "../types/ui";
 
 interface SpinDiamondProps extends AnimatedComponentProps {
   size?: number;
@@ -14,7 +14,7 @@ const Main = styled.div<{ $size?: number }>`
 
   position: relative;
 
-  width: ${({ $size = 450 }) => $size}px;
+  width: var(--spin-diamond-size, 450px);
   aspect-ratio: 1 / 1;
 
   background-color: #01b0cd;
@@ -51,9 +51,19 @@ export const SpinDiamond = ({
   size,
   className,
   children,
+  style,
 }: SpinDiamondProps) => {
   return (
-    <Main $size={size} className={className}>
+    <Main
+      $size={size}
+      className={className}
+      style={{
+        ...(size
+          ? { ["--spin-diamond-size" as CSSVariable]: `${size}px` }
+          : {}),
+        ...style,
+      }}
+    >
       <ContentHelper>{children}</ContentHelper>
     </Main>
   );

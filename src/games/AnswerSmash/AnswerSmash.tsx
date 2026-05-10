@@ -105,14 +105,14 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
     >
       {!startedCategory ? (
         <Frame className={categoryStatus} width={900}>
-          <FlipText className={categoryStatus} width={900}>
-            {category}
-          </FlipText>
+          <FlipText className={categoryStatus}>{category}</FlipText>
         </Frame>
       ) : (
         <>
           <Frame className={clueStatus} width={900}>
-            <span>{clue}</span>
+            <FlipText size="small" className={clueStatus}>
+              {clue}
+            </FlipText>
           </Frame>
           <ImageDiamond className={imageStatus}>
             <ImageClue $src={src} />

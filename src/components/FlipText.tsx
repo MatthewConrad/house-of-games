@@ -1,86 +1,70 @@
-import { useRef } from "react";
-import { CSSTransition } from "react-transition-group";
-import { css, styled } from "styled-components";
+import { styled } from "styled-components";
 
-import { AnimatedComponentProps } from "../types/ui";
+import { AnimatedComponentProps, CSSVariable } from "../types/ui";
 
 interface FlipTextProps extends AnimatedComponentProps {
-  width?: number;
+  size?: "default" | "small";
 }
 
-export const Main = styled.div<{
-  $delayIn?: number;
-  $delayOut?: number;
-  $width?: number;
-}>`
+export const Main = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
 
   padding: 0.5em;
-  font-size: 1.5em;
-  min-width: 100px;
-  min-height: 100px;
-  width: ${({ $width }) => ($width ? `${$width}px` : "fit-content")};
+  font-size: var(--flip-text-size, 1.5em);
 
   opacity: 0;
   transform: rotateX(-90deg);
+  white-space: normal;
 
-  transition: ${({ $delayIn = 1000 }) =>
-    css`transform 0.5s ease-in-out ${$delayIn}ms, opacity 0.5s ease-in-out ${$delayIn}ms`};
+  transition:
+    transform 0.5s ease-in-out var(--flip-text-delay-in, 1000ms),
+    opacity 0.5s ease-in-out var(--flip-text-delay-in, 1000ms);
 
-  &.appear,
-  &.appear-done,
-  &.enter,
-  &.enter-done,
   &.entering,
   &.entered {
     opacity: 1;
     transform: rotateX(0);
   }
 
-  &.exit,
-  &.exit-done,
   &.exiting,
   &.exited {
     opacity: 0;
     transform: rotateX(90deg);
 
-    transition: ${({ $delayOut = 0 }) =>
-      css`transform 0.5s ease-in-out ${$delayOut}ms, opacity 0.25s ease-in-out ${$delayOut}ms`};
+    transition:
+      transform 0.5s ease-in-out var(--flip-text-delay-out, 0ms),
+      opacity 0.25s ease-in-out var(--flip-text-delay-out, 0ms);
   }
 `;
 
 export const FlipText = ({
+  size,
   animationProps,
-  width,
   children,
   className,
+  style,
 }: FlipTextProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const { delayIn, delayOut, ...animations } = animationProps ?? {};
+  const { delayIn, delayOut } = animationProps ?? {};
 
   return (
-    <>
-      <CSSTransition
-        nodeRef={ref}
-        in
-        appear
-        mountOnEnter
-        timeout={0}
-        {...animations}
-      >
-        <Main
-          ref={ref}
-          className={className}
-          $delayIn={delayIn}
-          $delayOut={delayOut}
-          $width={width}
-        >
-          {children}
-        </Main>
-      </CSSTransition>
-    </>
+    <Main
+      className={[`flip-text`, className].join(" ").trim()}
+      style={{
+        ...(delayIn
+          ? { ["--flip-text-delay-in" as CSSVariable]: `${delayIn}ms` }
+          : {}),
+        ...(delayOut
+          ? { ["--flip-text-delay-out" as CSSVariable]: `${delayOut}ms` }
+          : {}),
+        ...(size === "small"
+          ? { ["--flip-text-size" as CSSVariable]: "1em" }
+          : {}),
+        ...style,
+      }}
+    >
+      {children}
+    </Main>
   );
 };
