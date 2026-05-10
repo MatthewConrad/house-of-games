@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { CSSTransition } from "react-transition-group";
 import { styled } from "styled-components";
 
 import { AnimatedComponentProps } from "../types/ui";
@@ -51,7 +50,9 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
   &.appear,
   &.appear-done,
   &.enter,
-  &.enter-done {
+  &.enter-done,
+  &.entering,
+  &.entered {
     width: ${({ $width = DEFAULT_WIDTH }) => `${$width}px`};
     padding: 2em;
     opacity: 1;
@@ -61,6 +62,8 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
       inset -8px -8px 16px 0 rgba(0, 0, 0, 0.15);
   }
 
+  &.exiting,
+  &.exited,
   &.exit,
   &.exit-done {
     opacity: 0;
@@ -72,34 +75,14 @@ const Main = styled.div<{ $width?: number; $isAnswer?: boolean }>`
   }
 `;
 
-export const Frame = ({
-  animationProps,
-  width,
-  isAnswer,
-  children,
-  className,
-}: FrameProps) => {
+export const Frame = ({ width, isAnswer, children, className }: FrameProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
     <StaticWidthHelper $width={width}>
-      <CSSTransition
-        nodeRef={ref}
-        in
-        appear
-        mountOnEnter
-        timeout={0}
-        {...animationProps}
-      >
-        <Main
-          ref={ref}
-          $width={width}
-          $isAnswer={isAnswer}
-          className={className}
-        >
-          {children}
-        </Main>
-      </CSSTransition>
+      <Main ref={ref} $width={width} $isAnswer={isAnswer} className={className}>
+        {children}
+      </Main>
     </StaticWidthHelper>
   );
 };

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTransitionState } from "react-transition-state";
 
 import { FlipText } from "../../components/FlipText";
 import { Frame } from "../../components/Frame";
@@ -13,50 +14,55 @@ import {
 import { RoundProps, Rounds } from "../../types/gameState";
 import { ANSWER_SMASH_ENTRIES } from "./entries";
 import { ImageClue, ImageDiamond } from "./presenter";
+import { useClueState } from "./useClueState";
 
 export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
   const { handleAwardPoint } = useGameActions();
 
   const [startedCategory, setStartedCategory] = useState(false);
-  const [showCategory, setShowCategory] = useState(true);
   const [categoryIndex, setCategoryIndex] = useState(0);
   const [clueIndex, setClueIndex] = useState(0);
-  const [showClue, setShowClue] = useState(false);
-  const [showImage, setShowImage] = useState(false);
-  const [showAnswer, setShowAnswer] = useState(false);
+
+  const {
+    imageStatus,
+    clueStatus,
+    answerStatus,
+    showClue,
+    showAnswer,
+    resetClue,
+  } = useClueState();
+
+  const [{ status: categoryStatus }, setShowCategory] = useTransitionState({
+    timeout: 1000,
+    preEnter: true,
+    mountOnEnter: true,
+    unmountOnExit: true,
+  });
 
   const categories = Object.entries(ANSWER_SMASH_ENTRIES);
 
   const [category, clues] = categories[categoryIndex];
   const { clue, src, answer } = clues[clueIndex];
 
-  console.log("state???", {
-    startedCategory,
-    showCategory,
-    categoryIndex,
-    clueIndex,
-    showClue,
-    showImage,
-    showAnswer,
-  });
-
-  const resetClue = () => {
-    console.log("reset clue");
-    setShowClue(false);
-    setShowImage(false);
-    setShowAnswer(false);
-  };
-
   const handleStartCategory = () => {
-    console.log("handle start category");
     setStartedCategory(true);
     setClueIndex(0);
-    setShowClue(true);
+    showClue();
+  };
+
+  const handleNextCategory = () => {
+    if (categoryIndex === categories.length - 1) {
+      onRoundEnd();
+    } else {
+      setCategoryIndex((i) => i + 1);
+      setStartedCategory(false);
+      setClueIndex(0);
+      setShowCategory(true);
+    }
   };
 
   const handleStepBack = () => {
-    console.log("handle step back");
     resetClue();
     if (clueIndex > 0) {
       setClueIndex((i) => i - 1);
@@ -68,114 +74,54 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
     }
   };
 
-  const handleNextCategory = () => {
-    console.log("handle next category");
-    if (categoryIndex === categories.length - 1) {
-      onRoundEnd();
-    } else {
-      console.log("category transitioned, not in last category");
-      setCategoryIndex((i) => i + 1);
-      setStartedCategory(false);
-      setClueIndex(0);
-      setShowCategory(true);
-    }
-  };
-
-  const handleClueTransition = () => {
-    console.log("handle clue transition");
-    if (clueIndex < clues.length - 1 && clueIndex >= 0) {
-      setClueIndex((i) => i + 1);
-      setShowClue(true);
-    } else if (clueIndex === clues.length - 1) {
-      console.log("next clue was the last, so set category");
-      handleNextCategory();
-    }
-  };
-
   const handleAdvanceRound = () => {
-    console.log("handle advance round");
-    if (showCategory) {
-      console.log(`reset show category`);
+    if (!startedCategory) {
       setShowCategory(false);
+      setTimeout(() => handleStartCategory(), 1000);
     } else {
       resetClue();
-
-      if (clueIndex < clues.length) {
-        setClueIndex((i) => i + 1);
-      } else {
-        handleNextCategory();
-      }
+      setTimeout(() => {
+        if (clueIndex === clues.length - 1) {
+          handleNextCategory();
+        } else {
+          setClueIndex((i) => i + 1);
+          showClue();
+        }
+      }, 1000);
     }
   };
+
+  if (
+    !startedCategory &&
+    categoryIndex === 0 &&
+    categoryStatus === "unmounted"
+  ) {
+    setShowCategory(true);
+  }
 
   return (
     <PageWrapper
       style={!startedCategory ? { justifyContent: "center" } : { gap: "5rem" }}
     >
       {!startedCategory ? (
-        <Frame
-          animationProps={{
-            in: showCategory,
-            timeout: 1000,
-            unmountOnExit: true,
-            onExited: handleStartCategory,
-          }}
-          width={900}
-        >
-          <FlipText
-            animationProps={{
-              in: showCategory,
-              timeout: 1500,
-              delayIn: 1000,
-              delayOut: 0,
-            }}
-            width={900}
-          >
-            {category}
-          </FlipText>
+        <Frame className={categoryStatus} width={900}>
+          <FlipText width={900}>{category}</FlipText>
         </Frame>
       ) : (
         <>
-          <Frame
-            animationProps={{
-              in: showClue,
-              timeout: 1000,
-              onEntered: () => setShowImage(true),
-              onExited: handleClueTransition,
-            }}
-            width={900}
-          >
+          <Frame className={clueStatus} width={900}>
             <span>{clue}</span>
           </Frame>
-          <ImageDiamond
-            animationProps={{
-              in: showImage,
-              timeout: 1000,
-            }}
-          >
+          <ImageDiamond className={imageStatus}>
             <ImageClue $src={src} />
           </ImageDiamond>
 
-          <Frame
-            animationProps={{
-              in: showAnswer,
-              timeout: 1000,
-            }}
-            width={900}
-          >
-            <FlipText
-              animationProps={{
-                in: showAnswer,
-                timeout: 1500,
-                delayIn: 1000,
-                delayOut: 0,
-              }}
-            >
-              {answer}
-            </FlipText>
+          <Frame className={answerStatus} width={900}>
+            <FlipText>{answer}</FlipText>
           </Frame>
         </>
       )}
+
       <Footer>
         <ControlsContainer>
           {players.map((player, index) => (
@@ -192,7 +138,7 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
         </ControlsContainer>
         <ControlsContainer style={{ marginLeft: "auto" }}>
           <button onClick={handleStepBack}>Previous Clue</button>
-          <button onClick={() => setShowAnswer(true)}>Reveal</button>
+          <button onClick={showAnswer}>Reveal</button>
           <button onClick={handleAdvanceRound}>Advance</button>
         </ControlsContainer>
       </Footer>

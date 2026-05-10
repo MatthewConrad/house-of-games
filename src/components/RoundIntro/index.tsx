@@ -17,6 +17,7 @@ export const RoundIntro = ({ round }: IntroProps) => {
 
   const [{ status }, toggle] = useTransitionState({
     timeout: 1000,
+    preEnter: true,
     mountOnEnter: true,
     unmountOnExit: true,
     onStateChange: ({ current: { status, isEnter } }) => {

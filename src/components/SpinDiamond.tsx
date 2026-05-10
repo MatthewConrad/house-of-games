@@ -26,6 +26,7 @@ const Main = styled.div<{ $size?: number }>`
     transform 1s ease-in-out,
     opacity 0.1s ease-in-out;
 
+  &.entering,
   &.entered {
     opacity: 1;
     transform: rotate(-45deg);
@@ -51,8 +52,6 @@ export const SpinDiamond = ({
   className,
   children,
 }: SpinDiamondProps) => {
-  console.log("class name??", className);
-
   return (
     <Main $size={size} className={className}>
       <ContentHelper>{children}</ContentHelper>
