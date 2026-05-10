@@ -1,6 +1,13 @@
 import { useTransitionState } from "react-transition-state";
 
-export const useClueState = () => {
+export const useAnswerSmashTransitionState = () => {
+  const [{ status: categoryStatus }, setShowCategory] = useTransitionState({
+    timeout: 1000,
+    preEnter: true,
+    mountOnEnter: true,
+    unmountOnExit: true,
+  });
+
   const [{ status: imageStatus }, setShowImage] = useTransitionState({
     timeout: 1000,
     preEnter: true,
@@ -27,6 +34,10 @@ export const useClueState = () => {
     unmountOnExit: true,
   });
 
+  const showCategory = () => {
+    setShowCategory(true);
+  };
+
   const showClue = () => {
     setShowClue(true);
   };
@@ -41,12 +52,20 @@ export const useClueState = () => {
     setShowAnswer(false);
   };
 
+  const resetCategory = () => {
+    resetClue();
+    setShowCategory(false);
+  };
+
   return {
+    categoryStatus,
     imageStatus,
     clueStatus,
     answerStatus,
+    showCategory,
     showClue,
     showAnswer,
     resetClue,
+    resetCategory,
   };
 };

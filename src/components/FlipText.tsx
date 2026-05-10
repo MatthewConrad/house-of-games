@@ -32,13 +32,17 @@ export const Main = styled.div<{
   &.appear,
   &.appear-done,
   &.enter,
-  &.enter-done {
+  &.enter-done,
+  &.entering,
+  &.entered {
     opacity: 1;
     transform: rotateX(0);
   }
 
   &.exit,
-  &.exit-done {
+  &.exit-done,
+  &.exiting,
+  &.exited {
     opacity: 0;
     transform: rotateX(90deg);
 

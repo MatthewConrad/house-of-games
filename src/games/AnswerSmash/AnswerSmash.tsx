@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTransitionState } from "react-transition-state";
 
 import { FlipText } from "../../components/FlipText";
 import { Frame } from "../../components/Frame";
@@ -14,7 +13,7 @@ import {
 import { RoundProps, Rounds } from "../../types/gameState";
 import { ANSWER_SMASH_ENTRIES } from "./entries";
 import { ImageClue, ImageDiamond } from "./presenter";
-import { useClueState } from "./useClueState";
+import { useAnswerSmashTransitionState } from "./useAnswerSmashTransitionState";
 
 export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
@@ -25,20 +24,16 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const [clueIndex, setClueIndex] = useState(0);
 
   const {
+    categoryStatus,
     imageStatus,
     clueStatus,
     answerStatus,
+    showCategory,
     showClue,
     showAnswer,
+    resetCategory,
     resetClue,
-  } = useClueState();
-
-  const [{ status: categoryStatus }, setShowCategory] = useTransitionState({
-    timeout: 1000,
-    preEnter: true,
-    mountOnEnter: true,
-    unmountOnExit: true,
-  });
+  } = useAnswerSmashTransitionState();
 
   const categories = Object.entries(ANSWER_SMASH_ENTRIES);
 
@@ -58,25 +53,30 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
       setCategoryIndex((i) => i + 1);
       setStartedCategory(false);
       setClueIndex(0);
-      setShowCategory(true);
+      showCategory();
     }
   };
 
   const handleStepBack = () => {
     resetClue();
+
     if (clueIndex > 0) {
       setClueIndex((i) => i - 1);
+      showClue();
     } else {
       if (categoryIndex > 0) {
         setCategoryIndex((i) => i - 1);
         setClueIndex(categories[categoryIndex - 1][1].length - 1);
       }
+
+      setStartedCategory(false);
+      showCategory();
     }
   };
 
   const handleAdvanceRound = () => {
     if (!startedCategory) {
-      setShowCategory(false);
+      resetCategory();
       setTimeout(() => handleStartCategory(), 1000);
     } else {
       resetClue();
@@ -96,7 +96,7 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
     categoryIndex === 0 &&
     categoryStatus === "unmounted"
   ) {
-    setShowCategory(true);
+    showCategory();
   }
 
   return (
@@ -105,7 +105,9 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
     >
       {!startedCategory ? (
         <Frame className={categoryStatus} width={900}>
-          <FlipText width={900}>{category}</FlipText>
+          <FlipText className={categoryStatus} width={900}>
+            {category}
+          </FlipText>
         </Frame>
       ) : (
         <>
@@ -117,7 +119,7 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
           </ImageDiamond>
 
           <Frame className={answerStatus} width={900}>
-            <FlipText>{answer}</FlipText>
+            <FlipText className={answerStatus}>{answer}</FlipText>
           </Frame>
         </>
       )}
@@ -137,8 +139,15 @@ export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
           ))}
         </ControlsContainer>
         <ControlsContainer style={{ marginLeft: "auto" }}>
-          <button onClick={handleStepBack}>Previous Clue</button>
-          <button onClick={showAnswer}>Reveal</button>
+          <button
+            onClick={handleStepBack}
+            disabled={categoryIndex === 0 && !startedCategory}
+          >
+            Previous Clue
+          </button>
+          <button onClick={showAnswer} disabled={!startedCategory}>
+            Reveal
+          </button>
           <button onClick={handleAdvanceRound}>Advance</button>
         </ControlsContainer>
       </Footer>
