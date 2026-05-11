@@ -3,7 +3,7 @@ import { styled } from "styled-components";
 import { AnimatedComponentProps, CSSVariable } from "../types/ui";
 
 interface FlipTextProps extends AnimatedComponentProps {
-  size?: "default" | "small";
+  size?: "large" | "default" | "small";
 }
 
 export const Main = styled.div`
@@ -58,8 +58,11 @@ export const FlipText = ({
         ...(delayOut
           ? { ["--flip-text-delay-out" as CSSVariable]: `${delayOut}ms` }
           : {}),
-        ...(size === "small"
-          ? { ["--flip-text-size" as CSSVariable]: "1em" }
+        ...(size === "small" || size === "large"
+          ? {
+              ["--flip-text-size" as CSSVariable]:
+                size === "small" ? "1em" : "2.5em",
+            }
           : {}),
         ...style,
       }}

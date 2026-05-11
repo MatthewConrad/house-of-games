@@ -3,6 +3,7 @@ import { useTransitionState } from "react-transition-state";
 
 import { FlipText } from "../../components/FlipText";
 import { Frame } from "../../components/Frame";
+import { AnimationOverlapHelper } from "../../components/Presentation";
 import { RoundIntro } from "../../components/RoundIntro";
 
 import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
@@ -14,12 +15,7 @@ import {
 import { RoundProps, Rounds } from "../../types/gameState";
 import { CODE_ENTRIES } from "./entries";
 import { stringToCodeWords } from "./helpers";
-import {
-  AnimationHelper,
-  CODE_WIDTH,
-  CodeWordContainer,
-  CodeWrapper,
-} from "./presenter";
+import { CODE_WIDTH, CodeWordContainer, CodeWrapper } from "./presenter";
 
 export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
@@ -125,14 +121,14 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
                   width={CODE_WIDTH}
                   key={`${index}${codeChar.code}${charIndex}frame`}
                 >
-                  <AnimationHelper>
+                  <AnimationOverlapHelper>
                     <FlipText className={showAnswer ? "exited" : clueStatus}>
                       {codeChar.code}
                     </FlipText>
-                    <FlipText className={showAnswer ? clueStatus : undefined}>
+                    <FlipText className={showAnswer ? clueStatus : "exited"}>
                       {codeChar.char}
                     </FlipText>
-                  </AnimationHelper>
+                  </AnimationOverlapHelper>
                 </Frame>
               );
             })}

@@ -1,14 +1,12 @@
-import { useRef, useState } from "react";
-import { CSSTransition } from "react-transition-group";
+import { useState } from "react";
+import { useTransitionState } from "react-transition-state";
 
+import { FlipText } from "../../components/FlipText";
+import { Frame } from "../../components/Frame";
+import { AnimationOverlapHelper } from "../../components/Presentation";
 import { RoundIntro } from "../../components/RoundIntro";
 
-import {
-  Clue,
-  ControlsContainer,
-  Footer,
-  PageWrapper,
-} from "../../App.presenter";
+import { ControlsContainer, Footer, PageWrapper } from "../../App.presenter";
 import {
   useGameActions,
   usePlayersSelector,
@@ -22,10 +20,14 @@ export const DistinctlyAverageGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
   const { handleAwardPoint } = useGameActions();
 
-  const clueRef = useRef<HTMLDivElement>(null);
-
   const [clueIndex, setClueIndex] = useState(0);
-  const [showClue, setShowClue] = useState(true);
+  const [{ status: clueStatus }, setShowClue] = useTransitionState({
+    timeout: 1000,
+    preEnter: true,
+    mountOnEnter: true,
+    unmountOnExit: true,
+  });
+
   const [showAnswer, setShowAnswer] = useState(false);
 
   const [pairOne, setPairOne] = useState<number[]>([]);
@@ -38,11 +40,15 @@ export const DistinctlyAverageGame = ({ onRoundEnd }: RoundProps) => {
     setPairOne([]);
     setPairTwo([]);
 
-    if (clueIndex === 0 && !showClue) {
+    if (clueIndex === 0 && clueStatus !== "entered") {
       setShowClue(true);
     } else if (clueIndex < DISTINCTLY_AVERAGE_ENTRIES.length - 1) {
       setShowClue(false);
-      setClueIndex((i) => i + 1);
+
+      setTimeout(() => {
+        setClueIndex((i) => i + 1);
+        setShowClue(true);
+      }, 1000);
     } else {
       onRoundEnd();
     }
@@ -56,9 +62,11 @@ export const DistinctlyAverageGame = ({ onRoundEnd }: RoundProps) => {
     }
   };
 
-  if (!showClue && clueIndex !== 0) {
+  if (clueStatus === "unmounted" && clueIndex === 0) {
     setShowClue(true);
   }
+
+  console.log("help", { clueIndex, clueStatus, showAnswer });
 
   const averageOne = (pairOne[0] + pairOne[1]) / 2;
   const averageTwo = (pairTwo[0] + pairTwo[1]) / 2;
@@ -69,14 +77,18 @@ export const DistinctlyAverageGame = ({ onRoundEnd }: RoundProps) => {
 
   return (
     <PageWrapper>
-      {showClue && (
+      {clueStatus !== "unmounted" && (
         <>
-          <CSSTransition nodeRef={clueRef} in={true} appear={true} timeout={0}>
-            <Clue ref={clueRef}>
-              {!showAnswer && <span>{clue}</span>}
-              {showAnswer && <span>{answer}</span>}
-            </Clue>
-          </CSSTransition>
+          <Frame width={1000} className={clueStatus}>
+            <AnimationOverlapHelper>
+              <FlipText className={showAnswer ? "exited" : clueStatus}>
+                {clue}
+              </FlipText>
+              <FlipText className={showAnswer ? clueStatus : "exited"}>
+                {answer}
+              </FlipText>
+            </AnimationOverlapHelper>
+          </Frame>
 
           <InputsWrapper>
             <TeamWrapper>
