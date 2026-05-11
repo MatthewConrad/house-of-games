@@ -1,9 +1,9 @@
-import { AnswerSmash } from "./games/AnswerSmash/AnswerSmash";
-import { DistinctlyAverage } from "./games/DistinctlyAverage/DistinctlyAverage";
+import { AnswerSmash } from "./games/AnswerSmash";
+import { DistinctlyAverage } from "./games/DistinctlyAverage";
 import { PlayersSetup } from "./games/GameSetup/Players";
-import { GamesHouseOf } from "./games/GamesHouseOf/GamesHouseOf";
-import { Leaderboard } from "./games/Leaderboard/Leaderboard";
-import { RoundInCode } from "./games/RoundInCode/RoundInCode";
+import { GamesHouseOf } from "./games/GamesHouseOf";
+import { Leaderboard } from "./games/Leaderboard";
+import { RoundInCode } from "./games/RoundInCode";
 import { useGameActions, useGameState } from "./redux/hooks";
 import { Rounds } from "./types/gameState";
 

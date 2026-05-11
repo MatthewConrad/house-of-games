@@ -16,7 +16,7 @@ import { RoundProps, Rounds } from "../../types/gameState";
 import { DISTINCTLY_AVERAGE_ENTRIES } from "./entries";
 import { Average, InputsWrapper, TeamWrapper } from "./presenter";
 
-export const DistinctlyAverageGame = ({ onRoundEnd }: RoundProps) => {
+const DistinctlyAverageGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
   const { handleAwardPoint } = useGameActions();
 

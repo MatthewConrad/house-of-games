@@ -17,7 +17,7 @@ import { CODE_ENTRIES } from "./entries";
 import { stringToCodeWords } from "./helpers";
 import { CODE_WIDTH, CodeWordContainer, CodeWrapper } from "./presenter";
 
-export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
+const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
   const { handleAwardPoint } = useGameActions();
 

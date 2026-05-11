@@ -16,7 +16,7 @@ import { RoundProps, Rounds } from "../../types/gameState";
 import { GAMES_HOUSE_OF_ENTRIES } from "./entries";
 import { alphabetize } from "./helpers";
 
-export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
+const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
   const { handleAwardPoint } = useGameActions();
 

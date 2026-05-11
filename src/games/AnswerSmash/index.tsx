@@ -15,7 +15,7 @@ import { ANSWER_SMASH_ENTRIES } from "./entries";
 import { ImageClue, ImageDiamond } from "./presenter";
 import { useAnswerSmashTransitionState } from "./useAnswerSmashTransitionState";
 
-export const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
+const AnswerSmashGame = ({ onRoundEnd }: RoundProps) => {
   const players = usePlayersSelector();
   const { handleAwardPoint } = useGameActions();
 
