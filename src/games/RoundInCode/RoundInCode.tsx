@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTransitionState } from "react-transition-state";
 
 import { FlipText } from "../../components/FlipText";
 import { Frame } from "../../components/Frame";
@@ -25,11 +26,7 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
   const { handleAwardPoint } = useGameActions();
 
   const [categoryIndex, setCategoryIndex] = useState(0);
-  const [showCategory, setShowCategory] = useState(true);
-  const [nextCategory, setNextCategory] = useState(0);
   const [clueIndex, setClueIndex] = useState(0);
-  const [nextClue, setNextClue] = useState(0);
-  const [showClue, setShowClue] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
 
   const categories = Object.entries(CODE_ENTRIES);
@@ -39,113 +36,100 @@ export const RoundInCodeGame = ({ onRoundEnd }: RoundProps) => {
 
   const codeWords = stringToCodeWords(clue);
 
+  const [{ status: clueStatus }, setShowClue] = useTransitionState({
+    timeout: 1000,
+    preEnter: true,
+    mountOnEnter: true,
+    unmountOnExit: true,
+  });
+
+  const [{ status: categoryStatus }, setShowCategory] = useTransitionState({
+    timeout: 1000,
+    preEnter: true,
+    mountOnEnter: true,
+    unmountOnExit: true,
+    onStateChange: ({ current: { status, isEnter } }) => {
+      if (status === "entered" && isEnter) {
+        setShowClue(true);
+      }
+    },
+  });
+
   const resetClue = () => {
     setShowClue(false);
     setShowAnswer(false);
   };
 
-  const handleAdvanceRound = () => {
-    resetClue();
+  const handleStartCategory = () => {
+    setShowCategory(true);
+    setClueIndex(0);
+  };
 
-    if (!showClue && clueIndex === 0) {
-      setShowClue(true);
+  const handleNextCategory = () => {
+    if (categoryIndex === categories.length - 1) {
+      onRoundEnd();
     } else {
-      if (clueIndex < clues.length - 1) {
-        setNextClue((i) => i + 1);
-      } else {
-        if (categoryIndex < categories.length) {
-          setShowCategory(false);
-          setNextCategory((i) => i + 1);
-          setNextClue(0);
-        }
-      }
+      setShowCategory(false);
+      setTimeout(() => {
+        setCategoryIndex((i) => i + 1);
+        setClueIndex(0);
+        setShowCategory(true);
+      }, 1000);
     }
   };
 
   const handleStepBack = () => {
     resetClue();
+
     if (clueIndex > 0) {
-      setNextClue((i) => i - 1);
+      setClueIndex((i) => i - 1);
+      setShowClue(true);
     } else {
       if (categoryIndex > 0) {
-        setShowCategory(false);
-        setNextCategory((i) => i - 1);
-        setNextClue(categories[categoryIndex - 1][1].length - 1);
+        setCategoryIndex((i) => i - 1);
+        setClueIndex(categories[categoryIndex - 1][1].length - 1);
+        setShowClue(true);
       }
     }
   };
 
-  const showNextClue = () => {
-    setClueIndex(nextClue);
-    setShowClue(true);
+  const handleAdvanceRound = () => {
+    resetClue();
+    setTimeout(() => {
+      if (clueIndex === clues.length - 1) {
+        handleNextCategory();
+      } else {
+        setClueIndex((i) => i + 1);
+        setShowClue(true);
+      }
+    }, 1000);
   };
 
-  const showNextCategory = () => {
-    setCategoryIndex(nextCategory);
-    setShowCategory(true);
-  };
-
-  const handleCategoryTransition = () => {
-    if (nextCategory === categories.length) {
-      onRoundEnd();
-    } else {
-      showNextCategory();
-    }
-  };
-
-  const handleClueTransition = () => {
-    if (nextClue < clues.length && nextClue >= 0) {
-      showNextClue();
-    }
-  };
+  if (categoryIndex === 0 && categoryStatus === "unmounted") {
+    handleStartCategory();
+  }
 
   return (
     <PageWrapper>
-      <Frame
-        animationProps={{
-          in: showCategory,
-          timeout: 1000,
-          onExited: handleCategoryTransition,
-        }}
-        width={950}
-      >
+      <Frame className={categoryStatus} width={950}>
         <span>{category}</span>
       </Frame>
       <CodeWrapper>
         {codeWords.map((word, index) => (
           <CodeWordContainer key={category + index + "helper"}>
             {word.map((codeChar, charIndex) => {
-              const isCodeVisible = showClue && !showAnswer;
-
               return (
                 <Frame
-                  animationProps={{
-                    in: showClue,
-                    timeout: 1000,
-                    onExited: handleClueTransition,
-                  }}
+                  className={clueStatus}
                   isAnswer
                   width={CODE_WIDTH}
                   key={`${index}${codeChar.code}${charIndex}frame`}
                 >
                   <AnimationHelper>
-                    <FlipText
-                      animationProps={{
-                        in: isCodeVisible,
-                        timeout: isCodeVisible ? 500 : 1500,
-                        unmountOnExit: true,
-                      }}
-                    >
+                    <FlipText className={showAnswer ? "exited" : clueStatus}>
                       {codeChar.code}
                     </FlipText>
-                    <FlipText
-                      animationProps={{
-                        in: showAnswer,
-                        timeout: 500,
-                        unmountOnExit: true,
-                        delayIn: 0,
-                      }}
-                    >
+                    <FlipText className={showAnswer ? clueStatus : undefined}>
                       {codeChar.char}
                     </FlipText>
                   </AnimationHelper>
