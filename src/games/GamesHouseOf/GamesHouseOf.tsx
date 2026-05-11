@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTransitionState } from "react-transition-state";
 
 import { FlipText } from "../../components/FlipText";
 import { Frame } from "../../components/Frame";
@@ -20,14 +21,25 @@ export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
   const { handleAwardPoint } = useGameActions();
 
   const [index, setIndex] = useState(0);
-  const [nextIndex, setNextIndex] = useState(0);
-  const [showClue, setShowClue] = useState(true);
-  const [showAnswer, setShowAnswer] = useState(false);
   const [showUnsorted, setShowUnsorted] = useState(false);
 
   const numClues = GAMES_HOUSE_OF_ENTRIES.length;
   const { clue, answer } = GAMES_HOUSE_OF_ENTRIES[index];
   const sorted = alphabetize(`${answer}`);
+
+  const [{ status: clueStatus }, setShowClue] = useTransitionState({
+    timeout: 1000,
+    preEnter: true,
+    mountOnEnter: true,
+    unmountOnExit: true,
+  });
+
+  const [{ status: answerStatus }, setShowAnswer] = useTransitionState({
+    timeout: 1000,
+    preEnter: true,
+    mountOnEnter: true,
+    unmountOnExit: true,
+  });
 
   const resetClue = () => {
     setShowClue(false);
@@ -38,28 +50,21 @@ export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
   const handleAdvanceRound = () => {
     resetClue();
 
-    if (index < numClues) {
-      setNextIndex((i) => i + 1);
-    }
+    setTimeout(() => {
+      if (index < numClues - 1) {
+        setIndex((i) => i + 1);
+        setShowClue(true);
+      } else {
+        onRoundEnd();
+      }
+    }, 1000);
   };
 
   const handleStepBack = () => {
     resetClue();
     if (index > 0) {
-      setNextIndex((i) => i - 1);
-    }
-  };
-
-  const showNextClue = () => {
-    setIndex(nextIndex);
-    setShowClue(true);
-  };
-
-  const handleTransition = () => {
-    if (nextIndex === numClues) {
-      onRoundEnd();
-    } else {
-      showNextClue();
+      setIndex((i) => i - 1);
+      setShowClue(true);
     }
   };
 
@@ -68,49 +73,24 @@ export const GamesHouseOfGame = ({ onRoundEnd }: RoundProps) => {
 
     setTimeout(() => {
       setShowUnsorted(true);
-    }, 4000);
+    }, 3000);
   };
+
+  if (index === 0 && clueStatus === "unmounted") {
+    setShowClue(true);
+  }
 
   return (
     <PageWrapper>
-      <Frame
-        animationProps={{
-          in: showClue,
-          timeout: 1000,
-          onExited: handleTransition,
-        }}
-        width={900}
-      >
-        <FlipText
-          animationProps={{
-            in: showClue,
-            timeout: 1500,
-            delayIn: 1000,
-            delayOut: 0,
-          }}
-        >
-          {clue}
-        </FlipText>
+      <Frame className={clueStatus} width={900}>
+        <FlipText className={clueStatus}>{clue}</FlipText>
       </Frame>
-      <Frame animationProps={{ in: showAnswer, timeout: 1000 }}>
+      <Frame className={answerStatus}>
         <AnimationOverlapHelper>
-          <FlipText
-            animationProps={{
-              in: showAnswer && !showUnsorted,
-              timeout: !showUnsorted ? 500 : 1500,
-              unmountOnExit: true,
-            }}
-          >
+          <FlipText className={showUnsorted ? "exited" : answerStatus}>
             {sorted.toUpperCase()}
           </FlipText>
-          <FlipText
-            animationProps={{
-              in: showAnswer && showUnsorted,
-              timeout: 500,
-              unmountOnExit: true,
-              delayIn: 0,
-            }}
-          >
+          <FlipText className={showUnsorted ? answerStatus : undefined}>
             {`${answer}`.toUpperCase()}
           </FlipText>
         </AnimationOverlapHelper>
